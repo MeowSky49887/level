@@ -1,0 +1,7 @@
+typer
+tqdm
+pyyaml
+requests
+validators
+beautifulsoup4
+pyinstaller
