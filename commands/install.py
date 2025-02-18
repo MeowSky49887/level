@@ -1,4 +1,5 @@
 import typer
+import click
 
 import os
 import re
@@ -15,7 +16,7 @@ def app(
     arch: str = typer.Option("x64", "--arch", "-a", help="Architecture to use (x64 or x86, default: x64)")
 ):  
     if not os.path.exists(CONFIG_FILE):
-        typer.echo("Config file not found.")
+        typer.echo(typer.rich_utils.rich_format_error(click.ClickException("Config file not found.")))
         raise typer.Exit(code=1)
 
     try:
@@ -23,11 +24,11 @@ def app(
             config = yaml.safe_load(f)
         languages = config["languages"]
     except Exception as e:
-        typer.echo(f"Failed to read config file at {CONFIG_FILE}.")
+        typer.echo(typer.rich_utils.rich_format_error(click.ClickException("Failed to read config file.")))
         raise typer.Exit(code=1)
     
     if arch not in ["x64", "x86"]:
-        typer.echo("Invalid architecture. Please specify 'x64' or 'x86'.")
+        typer.echo(typer.rich_utils.rich_format_error(click.ClickException("Invalid architecture. Please specify 'x64' or 'x86'.")))
         raise typer.Exit(code=1)
 
     if re.match(r"[a-zA-Z]+@[0-9]+\.[0-9]+\.[0-9]+", lang_ver):
@@ -45,17 +46,17 @@ def app(
         language = lang_ver
         major, minor, patch = -1, -1, -1
     else:
-        typer.echo("Invalid command format.")
+        typer.echo(typer.rich_utils.rich_format_error(click.ClickException("Invalid command format.")))
         raise typer.Exit(code=1)
     
     latest, full_version = availableInstaller(language, major, minor, patch)
     
     if not latest:
-        typer.echo("No matching language with specified version found.")
+        typer.echo(typer.rich_utils.rich_format_error(click.ClickException("No matching language with specified version found.")))
         raise typer.Exit(code=1)
 
     if arch not in latest:
-        typer.echo(f"{language} does not have a {arch} version available.")
+        typer.echo(typer.rich_utils.rich_format_error(click.ClickException(f"{language} does not have a {arch} version available.")))
         raise typer.Exit(code=1)
 
     url = latest[arch]

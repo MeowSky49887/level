@@ -1,4 +1,5 @@
 import typer
+import click
 
 import subprocess
 
@@ -35,10 +36,10 @@ def globalPath(target):
 
         typer.echo(f"Add path to global env successfully: {target}")
     except subprocess.CalledProcessError as e:
-        typer.echo(f"Error occurred: {e.output.decode('utf-8')}")
+        typer.echo(typer.rich_utils.rich_format_error(click.ClickException(f"Error occurred: {e.output.decode('utf-8')}")))
         raise typer.Exit(code=1)
     except Exception as e:
-        typer.echo(f"An unexpected error occurred: {str(e)}")
+        typer.echo(typer.rich_utils.rich_format_error(click.ClickException(f"An unexpected error occurred: {str(e)}")))
         raise typer.Exit(code=1)
     
 def localPath(target):
@@ -65,8 +66,8 @@ def localPath(target):
 
         typer.echo(f"Add path to local env successfully: {target}")
     except subprocess.CalledProcessError as e:
-        typer.echo(f"Error occurred: {e.output.decode('utf-8')}")
+        typer.echo(typer.rich_utils.rich_format_error(click.ClickException(f"Error occurred: {e.output.decode('utf-8')}")))
         raise typer.Exit(code=1)
     except Exception as e:
-        typer.echo(f"An unexpected error occurred: {str(e)}")
+        typer.echo(typer.rich_utils.rich_format_error(click.ClickException(f"An unexpected error occurred: {str(e)}")))
         raise typer.Exit(code=1)

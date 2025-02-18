@@ -1,4 +1,5 @@
 import typer
+import click
 
 import os
 import re
@@ -10,7 +11,7 @@ def app(
     target: str = typer.Argument(..., help="Language and Version (language@version) or valid full path to remove")
 ):
     if not os.path.exists(VERSIONS_FILE):
-        typer.echo("No versions.json found.")
+        typer.echo(typer.rich_utils.rich_format_error(click.ClickException("No versions.json found.")))
         raise typer.Exit(code=1)
 
     with open(VERSIONS_FILE, "r") as f:
@@ -20,13 +21,13 @@ def app(
         language, version = target.split("@")
 
         if language not in versions:
-            typer.echo(f"No installed versions found for {language}.")
+            typer.echo(typer.rich_utils.rich_format_error(click.ClickException(f"No installed versions found for {language}.")))
             raise typer.Exit(code=1)
 
         new_versions_list = [entry for entry in versions[language] if entry["version"] != version]
 
         if len(new_versions_list) == len(versions[language]):
-            typer.echo(f"Version {version} not found for {language}.")
+            typer.echo(typer.rich_utils.rich_format_error(click.ClickException(f"Version {version} not found for {language}.")))
             raise typer.Exit(code=1)
 
         versions[language] = new_versions_list
@@ -41,7 +42,7 @@ def app(
         try:
             target_path = os.path.abspath(target)
         except Exception:
-            typer.echo("Invalid path format.")
+            typer.echo(typer.rich_utils.rich_format_error(click.ClickException("Invalid path format.")))
             raise typer.Exit(code=1)
 
         removed = False

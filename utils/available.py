@@ -1,4 +1,5 @@
 import typer
+import click
 
 import os
 import re
@@ -12,7 +13,7 @@ from utils.get import getLink
 
 def availableInstaller(language, major, minor, patch):
     if not os.path.exists(CONFIG_FILE):
-        typer.echo("Config file not found.")
+        typer.echo(typer.rich_utils.rich_format_error(click.ClickException("Config file not found.")))
         raise typer.Exit(code=1)
 
     try:
@@ -20,7 +21,7 @@ def availableInstaller(language, major, minor, patch):
             config = yaml.safe_load(f)
         languages = config["languages"]
     except Exception as e:
-        typer.echo(f"Failed to read config file at {CONFIG_FILE}.")
+        typer.echo(typer.rich_utils.rich_format_error(click.ClickException("Failed to read config file.")))
         raise typer.Exit(code=1)
         
     if language in languages.keys():

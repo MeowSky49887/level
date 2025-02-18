@@ -1,4 +1,5 @@
 import typer
+import click
 
 import os
 import re
@@ -12,7 +13,7 @@ def app(
     path: str = typer.Argument(..., help="Path to add (must contain node, python, or php executable)")
 ):
     if not os.path.exists(CONFIG_FILE):
-        typer.echo("Config file not found.")
+        typer.echo(typer.rich_utils.rich_format_error(click.ClickException("Config file not found.")))
         raise typer.Exit(code=1)
 
     try:
@@ -20,13 +21,13 @@ def app(
             config = yaml.safe_load(f)
         languages = config["languages"]
     except Exception as e:
-        typer.echo(f"Failed to read config file at {CONFIG_FILE}.")
+        typer.echo(typer.rich_utils.rich_format_error(click.ClickException("Failed to read config file.")))
         raise typer.Exit(code=1)
     
     abs_path = os.path.abspath(path)
 
     if not os.path.exists(abs_path):
-        typer.echo(f"The specified path does not exist: {abs_path}")
+        typer.echo(typer.rich_utils.rich_format_error(click.ClickException(f"The specified path does not exist: {abs_path}")))
         raise typer.Exit(code=1)
 
     detected_lang = None
@@ -38,7 +39,7 @@ def app(
             detected_lang = lang
 
     if not detected_lang:
-        typer.echo("No recognized language executable (node.exe, python.exe, php.exe) found in the given path.")
+        typer.echo(typer.rich_utils.rich_format_error(click.ClickException("No recognized language executable (node.exe, python.exe, php.exe) found in the given path.")))
         raise typer.Exit(code=1)
 
     try:
@@ -50,11 +51,11 @@ def app(
         output = result.stdout.strip() or result.stderr.strip()
         detected_version = re.search(pattern, output).group(1)
     except Exception as e:
-        typer.echo(f"Error detecting version: {e}")
+        typer.echo(typer.rich_utils.rich_format_error(click.ClickException(f"Error detecting version: {e}")))
         raise typer.Exit(code=1)
 
     if not detected_version:
-        typer.echo("Unable to extract version from the executable.")
+        typer.echo(typer.rich_utils.rich_format_error(click.ClickException("Unable to get version from the executable.")))
         raise typer.Exit(code=1)
 
     if not os.path.exists(VERSIONS_FILE):

@@ -1,4 +1,5 @@
 import typer
+import click
 from tqdm import tqdm
 
 import os
@@ -64,11 +65,11 @@ def getFile(url, path, label):
                             progress_bar.update(len(chunk))
 
     except requests.RequestException as e:
-        typer.echo(f"Download failed: {e}")
+        typer.echo(typer.rich_utils.rich_format_error(click.ClickException(f"Download failed: {e}")))
         raise typer.Exit(code=1)
 
     if os.path.exists(path) and os.listdir(path):
-        typer.echo(f"Installation path {path} is not empty.")
+        typer.echo(typer.rich_utils.rich_format_error(click.ClickException(f"Installation path {path} is not empty.")))
         raise typer.Exit(code=1)
 
     try:
@@ -101,7 +102,7 @@ def getFile(url, path, label):
                 proc.wait()
 
                 if proc.returncode != 0:
-                    typer.echo(f"Extraction failed: {proc.stderr.read()}")
+                    typer.echo(typer.rich_utils.rich_format_error(click.ClickException(f"Extraction failed: {proc.stderr.read()}")))
                     raise typer.Exit(code=1)
 
             extracted_items = os.listdir(path)
@@ -133,7 +134,7 @@ def getFile(url, path, label):
                             nested_proc.wait()
 
                             if nested_proc.returncode != 0:
-                                typer.echo(f"Extraction failed: {nested_proc.stderr.read()}")
+                                typer.echo(typer.rich_utils.rich_format_error(click.ClickException(f"Extraction failed: {nested_proc.stderr.read()}")))
                                 raise typer.Exit(code=1)
 
                         os.remove(sub)
@@ -141,7 +142,7 @@ def getFile(url, path, label):
         typer.echo(f"Extracted to {path}")
 
     except Exception as e:
-        typer.echo(f"Extraction failed: {e}")
+        typer.echo(typer.rich_utils.rich_format_error(click.ClickException(f"Extraction failed: {e}")))
         raise typer.Exit(code=1)
     finally:
         if os.path.exists(local_file_path):
