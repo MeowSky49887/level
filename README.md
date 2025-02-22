@@ -12,7 +12,7 @@
 
 ## 📥 Installation 📥
 ### Download & Setup
-1. Download `level.exe` and `config.yaml` from the [Release Page](https://example.com/releases). 💾
+1. Download `level.exe` and `config.yaml` from the [Release Page](https://github.com/MeowSky49887/level/releases). 💾
 2. Place `level.exe` in a directory included in your system's `PATH`. 🔧
 3. Edit `config.yaml` to configure supported languages if needed. 🛠️
 
